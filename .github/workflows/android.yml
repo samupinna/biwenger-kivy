@@ -19,11 +19,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          api-level: 31
-          build-tools: 31.0.0
+      - name: Install Android SDK components
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip openjdk-17-jdk wget
+          mkdir -p $HOME/Android/Sdk/cmdline-tools
+          cd $HOME/Android/Sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip
+          rm cmdline-tools.zip
+          yes | $HOME/Android/Sdk/cmdline-tools/tools/bin/sdkmanager --sdk_root=$HOME/Android/Sdk "platform-tools" "platforms;android-31" "build-tools;31.0.0"
 
       - name: Install dependencies
         run: |
