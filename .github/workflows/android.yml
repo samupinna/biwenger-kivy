@@ -19,17 +19,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Android SDK components
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip openjdk-17-jdk wget
-          mkdir -p $HOME/Android/Sdk/cmdline-tools
-          cd $HOME/Android/Sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-          unzip cmdline-tools.zip
-          rm cmdline-tools.zip
-          yes | $HOME/Android/Sdk/cmdline-tools/tools/bin/sdkmanager --sdk_root=$HOME/Android/Sdk "platform-tools" "platforms;android-31" "build-tools;31.0.0"
-
       - name: Install dependencies
         run: |
           sudo apt update
@@ -37,12 +26,18 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython virtualenv
 
+      - name: Check environment
+        run: |
+          which buildozer || echo "buildozer no encontrado"
+          buildozer --version || echo "buildozer no instalado"
+          echo $PATH
+
       - name: Build APK
         run: |
           buildozer -v android debug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: biwenger-apk
           path: bin/*.apk
